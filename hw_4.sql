@@ -3,14 +3,12 @@ USE hw_4;
 
 DROP TABLES IF EXISTS `shops`, `cats`;
 CREATE TABLE `shops` (
-	`id` INT,
-    `shopname` VARCHAR (100),
-    PRIMARY KEY (id)
+	`id` INT PRIMARY KEY,
+    `shopname` VARCHAR (100)
 );
 CREATE TABLE `cats` (
 	`name` VARCHAR (100),
-    `id` INT,
-    PRIMARY KEY (id),
+    `id` INT PRIMARY KEY,
     shops_id INT,
     CONSTRAINT fk_cats_shops_id FOREIGN KEY (shops_id)
         REFERENCES `shops` (id)
@@ -54,13 +52,17 @@ JOIN `cats` c
 ON c.shops_id = sh.id
 WHERE name = 'Murzik';
 
--- Вывести магазины, в которых НЕ продаются коты “Мурзик” и “Zuza”
+-- Вывести магазины, в которых НЕ продаются коты "Murzik" и “Zuza”
 SELECT 
-    sh.shopname
-FROM `cats` c
-JOIN `shops` sh
-ON c.shops_id = sh.id
-WHERE name != 'Murzik' AND name != 'Zuza';
+	sh.shopname AS 'Shops without "Murzik" & “Zuza”'
+FROM `shops` sh
+LEFT JOIN (SELECT sh.id, sh.shopname
+	FROM `shops` sh
+	JOIN `cats` c 
+	ON c.shops_id = sh.id
+	WHERE `name` IN ('Zuza', 'Murzik')) AS r_id -- r_id - unnecessary store IDs
+ON sh.id = r_id.id
+WHERE r_id.id IS NULL;
 
 
 ------- Последнее задание, таблица:
